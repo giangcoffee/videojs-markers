@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.1 - 2018-02-03
+  /*! videojs-markers - v1.0.1 - 2018-05-20
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -293,7 +293,7 @@
       markerDiv.addEventListener('mouseover', function () {
         var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
         if (!!markerTip) {
-          markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
+          markerTip.querySelector('.vjs-tip-inner').innerHtml = setting.markerTip.text(marker);
           // margin-left needs to minus the padding length to align correctly with the marker
           markerTip.style.left = getPosition(marker) + '%';
           var markerTipBounding = getElementBounding(markerTip);
