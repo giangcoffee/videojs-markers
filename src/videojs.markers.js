@@ -50,6 +50,7 @@ const defaultSetting = {
   onMarkerClick: function(marker) {},
   onMarkerReached: function(marker, index) {},
   onMarkerTextKeyPress: function(marker, index) {},
+  onMarkerTextDeleted: function(marker, index) {},
   markers: [],
 };
 
@@ -230,6 +231,12 @@ function registerVideoJsMarkersPlugin(options) {
           });
       }
 
+      if (typeof setting.onMarkerTextDeleted === 'function') {
+          deleteIcon.addEventListener('click', function(event) {
+              setting.onMarkerTextDeleted(event, textarea, textCounter);
+          });
+      }
+
     Object.keys(setting.markerStyle).forEach(key => {
       markerDiv.style[key] = setting.markerStyle[key];
     });
@@ -295,6 +302,21 @@ function registerVideoJsMarkersPlugin(options) {
     sortMarkersList();
   }
 
+  function removeByKey(key: string): void {
+      var totalMarkers = markersList.length;
+      var indexes = [];
+      for (var i =0; i < totalMarkers; i++) {
+          if (markersList[i].key === key) {
+              indexes.push(i);
+              break;
+          }
+      }
+
+      if (indexes.length > 0) {
+          removeMarkers(indexes);
+      }
+  }
+
   function removeMarkers(indexArray: Array<number>): void {
     // reset overlay
     if (!!breakOverlay){
@@ -335,31 +357,12 @@ function registerVideoJsMarkersPlugin(options) {
         textarea.focus();
         let length = textarea.value.length;
         textarea.setSelectionRange(length, length);
-      // var marker = markersMap[markerDiv.getAttribute('data-marker-id')];
-      // if (!!markerTip) {
-      //   markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
-      //   // margin-left needs to minus the padding length to align correctly with the marker
-      //   markerTip.style.left = getPosition(marker) + '%';
-      //   var markerTipBounding = getElementBounding(markerTip);
-      //   var markerDivBounding = getElementBounding(markerDiv);
-      //   markerTip.style.marginLeft =
-      //     -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
-      //   markerTip.style.display = 'block';
-      // }
     });
 
     markerDiv.addEventListener('mouseout',() => {
         markerDiv.classList.remove('vjs-bookmark--focus');
     });
   }
-
-  // function initializeMarkerTip(): void {
-  //   markerTip = videojs.createEl('div', {
-  //     className: 'vjs-tip',
-  //     innerHTML: "<div class='vjs-tip-arrow'></div><div class='vjs-tip-inner'></div>",
-  //   });
-  //   player.el().querySelector('.vjs-progress-holder').appendChild(markerTip);
-  // }
 
   // show or hide break overlays
   function updateBreakOverlay(): void {
@@ -538,6 +541,9 @@ function registerVideoJsMarkersPlugin(options) {
     remove: function(indexArray: Array<number>): void {
       // remove markers given an array of index
       removeMarkers(indexArray);
+    },
+    removeByKey: function(key: string) {
+        removeByKey(key);
     },
     removeAll: function(): void {
       var indexArray = [];
