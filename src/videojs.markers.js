@@ -49,19 +49,10 @@ const defaultSetting = {
   },
   onMarkerClick: function(marker) {},
   onMarkerReached: function(marker, index) {},
+  onMarkerTextKeyPress: function(marker, index) {},
   markers: [],
 };
 
-// create a non-colliding random number
-function generateUUID(): string {
-  var d = new Date().getTime();
-  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    var r = (d + Math.random()*16)%16 | 0;
-    d = Math.floor(d/16);
-    return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-  });
-  return uuid;
-};
 
 /**
  * Returns the size of an element and its position
@@ -160,15 +151,13 @@ function registerVideoJsMarkersPlugin(options) {
 
   function addMarkers(newMarkers: Array<Marker>): void {
     newMarkers.forEach((marker: Marker) => {
-      marker.key = generateUUID();
-
       player.el().querySelector('.vjs-progress-holder')
         .appendChild(createMarkerDiv(marker));
 
       // store marker in an internal hash map
       markersMap[marker.key] = marker;
       markersList.push(marker);
-    })
+    });
 
     sortMarkersList();
   }
@@ -180,19 +169,66 @@ function registerVideoJsMarkersPlugin(options) {
   function setMarkderDivStyle(marker: Marker, markerDiv: Object): void {
     markerDiv.className = `vjs-bookmark ${marker.class || ""}`;
 
-    markerDiv.innerHTML = `
-        <div>
-            <div class="vjs-bookmark__content">
-                <span class="udi udi-bookmark"></span>
-                <label class="sr-only" for="bookmark_title">Bookmark title</label>
-                <textarea class="marker-content" id="bookmark-${marker.key}" maxlength="140" style="height: 35px;" placeholder="enter bookmark title">${marker.text}</textarea>
-                <!--<span class="vjs-bookmark__content__placeholder">Click to add a comment.</span>-->
-                <span class="vjs-bookmark__content__counter" id="bookmark-title-counter">140</span>
-                <span class="udi udi-delete" id="remove-bookmark-tooltip"></span>
-                <span class="udi udi-check"></span>
-            </div>
-        </div>
-    `;
+      var textarea = videojs.createEl('textarea', {
+          className: 'marker-content',
+          innerText: marker.text,
+          'style': "height: 35px;",
+          'placeholder': "enter bookmark title",
+          name: 'bookmark_title'
+      }, {
+          'marker-id': marker.key,
+          'maxlength': 140
+      });
+
+      var deleteIcon = videojs.createEl('span', {
+          className: 'udi udi-delete',
+          id: 'delete-icon-' + marker.key
+      });
+
+      var checkIcon = videojs.createEl('span', {
+          className: 'udi udi-check',
+          id: 'check-icon-' + marker.key
+      });
+
+      var label= videojs.createEl('label', {
+          className: 'sr-only',
+          for: 'bookmark_title',
+          innerText: 'Bookmark title'
+      });
+
+      var bookmarkIcon = videojs.createEl('span', {
+          className: 'udi udi-bookmark',
+          id: 'check-icon-' + marker.key
+      });
+      var textCounter = videojs.createEl('span', {
+          className: 'vjs-bookmark__content__counter',
+          id: 'text-counter-' + marker.key,
+          innerText: 140 - textarea.value.length
+      });
+
+      var bookMarkContent = videojs.createEl('div', {
+          className: 'vjs-bookmark__content',
+          id: 'text-counter-' + marker.key
+      });
+
+      bookMarkContent.appendChild(bookmarkIcon);
+      bookMarkContent.appendChild(label);
+      bookMarkContent.appendChild(textarea);
+      bookMarkContent.appendChild(textCounter);
+      bookMarkContent.appendChild(deleteIcon);
+      bookMarkContent.appendChild(checkIcon);
+
+      var container = videojs.createEl('div', {});
+      container.appendChild(bookMarkContent);
+
+      markerDiv.appendChild(container);
+
+      if (typeof setting.onMarkerTextKeyPress === "function") {
+          // if return false, prevent default behavior
+          textarea.addEventListener('keypress', function(event) {
+              setting.onMarkerTextKeyPress(event, textarea, textCounter);
+          });
+      }
 
     Object.keys(setting.markerStyle).forEach(key => {
       markerDiv.style[key] = setting.markerStyle[key];
@@ -218,7 +254,7 @@ function registerVideoJsMarkersPlugin(options) {
   function createMarkerDiv(marker: Marker): Object {
 
     var markerDiv = videojs.createEl('div', {}, {
-      'data-marker-key': marker.key,
+      'data-marker-id': marker.key,
       'data-marker-time': setting.markerTip.time(marker)
     });
 
@@ -233,7 +269,7 @@ function registerVideoJsMarkersPlugin(options) {
       }
 
       if (!preventDefault) {
-        var key = this.getAttribute('data-marker-key');
+        var key = this.getAttribute('data-marker-id');
         player.currentTime(setting.markerTip.time(markersMap[key]));
       }
     });
@@ -248,7 +284,7 @@ function registerVideoJsMarkersPlugin(options) {
   function updateMarkers(force: boolean): void {
     // update UI for markers whose time changed
     markersList.forEach((marker: Marker) => {
-      var markerDiv = player.el().querySelector(".vjs-marker[data-marker-key='" + marker.key +"']");
+      var markerDiv = player.el().querySelector(".vjs-marker[data-marker-id='" + marker.key +"']");
       var markerTime = setting.markerTip.time(marker);
 
       if (force || markerDiv.getAttribute('data-marker-time') !== markerTime) {
@@ -276,7 +312,7 @@ function registerVideoJsMarkersPlugin(options) {
         deleteIndexList.push(index);
 
         // delete from dom
-        let el = player.el().querySelector(".vjs-marker[data-marker-key='" + marker.key +"']");
+        let el = player.el().querySelector(".vjs-marker[data-marker-id='" + marker.key +"']");
         el && el.parentNode.removeChild(el);
       }
     });
@@ -295,7 +331,11 @@ function registerVideoJsMarkersPlugin(options) {
   function registerMarkerTipHandler(markerDiv: Object): void {
     markerDiv.addEventListener('mouseover', () => {
       markerDiv.classList.add('vjs-bookmark--focus');
-      // var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
+        let textarea = markerDiv.querySelector('textarea');
+        textarea.focus();
+        let length = textarea.value.length;
+        textarea.setSelectionRange(length, length);
+      // var marker = markersMap[markerDiv.getAttribute('data-marker-id')];
       // if (!!markerTip) {
       //   markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
       //   // margin-left needs to minus the padding length to align correctly with the marker
@@ -313,13 +353,13 @@ function registerVideoJsMarkersPlugin(options) {
     });
   }
 
-  function initializeMarkerTip(): void {
-    markerTip = videojs.createEl('div', {
-      className: 'vjs-tip',
-      innerHTML: "<div class='vjs-tip-arrow'></div><div class='vjs-tip-inner'></div>",
-    });
-    player.el().querySelector('.vjs-progress-holder').appendChild(markerTip);
-  }
+  // function initializeMarkerTip(): void {
+  //   markerTip = videojs.createEl('div', {
+  //     className: 'vjs-tip',
+  //     innerHTML: "<div class='vjs-tip-arrow'></div><div class='vjs-tip-inner'></div>",
+  //   });
+  //   player.el().querySelector('.vjs-progress-holder').appendChild(markerTip);
+  // }
 
   // show or hide break overlays
   function updateBreakOverlay(): void {
@@ -442,9 +482,9 @@ function registerVideoJsMarkersPlugin(options) {
 
   // setup the whole thing
   function initialize(): void {
-    if (setting.markerTip.display) {
-      initializeMarkerTip();
-    }
+    // if (setting.markerTip.display) {
+    //   initializeMarkerTip();
+    // }
 
     // remove existing markers if already initialized
     player.markers.removeAll();
