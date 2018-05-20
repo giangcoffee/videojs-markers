@@ -291,7 +291,7 @@ function registerVideoJsMarkersPlugin(options) {
   function updateMarkers(force: boolean): void {
     // update UI for markers whose time changed
     markersList.forEach((marker: Marker) => {
-      var markerDiv = player.el().querySelector(".vjs-marker[data-marker-id='" + marker.key +"']");
+      var markerDiv = player.el().querySelector(".vjs-bookmark[data-marker-id='" + marker.key +"']");
       var markerTime = setting.markerTip.time(marker);
 
       if (force || markerDiv.getAttribute('data-marker-time') !== markerTime) {
@@ -334,7 +334,7 @@ function registerVideoJsMarkersPlugin(options) {
         deleteIndexList.push(index);
 
         // delete from dom
-        let el = player.el().querySelector(".vjs-marker[data-marker-id='" + marker.key +"']");
+        let el = player.el().querySelector(".vjs-bookmark[data-marker-id='" + marker.key +"']");
         el && el.parentNode.removeChild(el);
       }
     });

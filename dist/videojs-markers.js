@@ -301,7 +301,7 @@
     function updateMarkers(force) {
       // update UI for markers whose time changed
       markersList.forEach(function (marker) {
-        var markerDiv = player.el().querySelector(".vjs-marker[data-marker-id='" + marker.key + "']");
+        var markerDiv = player.el().querySelector(".vjs-bookmark[data-marker-id='" + marker.key + "']");
         var markerTime = setting.markerTip.time(marker);
 
         if (force || markerDiv.getAttribute('data-marker-time') !== markerTime) {
@@ -344,7 +344,7 @@
           deleteIndexList.push(index);
 
           // delete from dom
-          var el = player.el().querySelector(".vjs-marker[data-marker-id='" + marker.key + "']");
+          var el = player.el().querySelector(".vjs-bookmark[data-marker-id='" + marker.key + "']");
           el && el.parentNode.removeChild(el);
         }
       });
