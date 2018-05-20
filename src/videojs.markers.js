@@ -282,20 +282,20 @@ function registerVideoJsMarkersPlugin(options) {
     markerDiv.addEventListener('mouseover', () => {
       var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
       if (!!markerTip) {
-        markerTip.querySelector('.vjs-tip-inner').innerHtml = setting.markerTip.text(marker);
+        markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
         // margin-left needs to minus the padding length to align correctly with the marker
         markerTip.style.left = getPosition(marker) + '%';
         var markerTipBounding = getElementBounding(markerTip);
         var markerDivBounding = getElementBounding(markerDiv);
         markerTip.style.marginLeft = 
           -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
-        markerTip.style.visibility = 'visible';
+        markerTip.style.display = 'block';
       }
     });
 
     markerDiv.addEventListener('mouseout',() => {
       if (!!markerTip) {
-        markerTip.style.visibility = "hidden";
+        markerTip.style.display = "none";
       }
     });
   }
