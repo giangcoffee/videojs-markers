@@ -178,7 +178,21 @@ function registerVideoJsMarkersPlugin(options) {
   }
 
   function setMarkderDivStyle(marker: Marker, markerDiv: Object): void {
-    markerDiv.className = `vjs-marker ${marker.class || ""}`;
+    markerDiv.className = `vjs-bookmark ${marker.class || ""}`;
+
+    markerDiv.innerHTML = `
+        <div>
+            <div class="vjs-bookmark__content">
+                <span class="udi udi-bookmark"></span>
+                <label class="sr-only" for="bookmark_title">Bookmark title</label>
+                <textarea class="marker-content" id="bookmark-${marker.key}" maxlength="140" style="height: 35px;" placeholder="enter bookmark title">${marker.text}</textarea>
+                <!--<span class="vjs-bookmark__content__placeholder">Click to add a comment.</span>-->
+                <span class="vjs-bookmark__content__counter" id="bookmark-title-counter">140</span>
+                <span class="udi udi-delete" id="remove-bookmark-tooltip"></span>
+                <span class="udi udi-check"></span>
+            </div>
+        </div>
+    `;
 
     Object.keys(setting.markerStyle).forEach(key => {
       markerDiv.style[key] = setting.markerStyle[key];
@@ -198,7 +212,7 @@ function registerVideoJsMarkersPlugin(options) {
     } else {
       const markerDivBounding = getElementBounding(markerDiv);
       markerDiv.style.marginLeft = markerDivBounding.width / 2 + 'px';
-    }    
+    }
   }
 
   function createMarkerDiv(marker: Marker): Object {
@@ -280,23 +294,22 @@ function registerVideoJsMarkersPlugin(options) {
   // attach hover event handler
   function registerMarkerTipHandler(markerDiv: Object): void {
     markerDiv.addEventListener('mouseover', () => {
-      var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
-      if (!!markerTip) {
-        markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
-        // margin-left needs to minus the padding length to align correctly with the marker
-        markerTip.style.left = getPosition(marker) + '%';
-        var markerTipBounding = getElementBounding(markerTip);
-        var markerDivBounding = getElementBounding(markerDiv);
-        markerTip.style.marginLeft = 
-          -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
-        markerTip.style.display = 'block';
-      }
+      markerDiv.classList.add('vjs-bookmark--focus');
+      // var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
+      // if (!!markerTip) {
+      //   markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
+      //   // margin-left needs to minus the padding length to align correctly with the marker
+      //   markerTip.style.left = getPosition(marker) + '%';
+      //   var markerTipBounding = getElementBounding(markerTip);
+      //   var markerDivBounding = getElementBounding(markerDiv);
+      //   markerTip.style.marginLeft =
+      //     -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
+      //   markerTip.style.display = 'block';
+      // }
     });
 
     markerDiv.addEventListener('mouseout',() => {
-      if (!!markerTip) {
-        markerTip.style.display = "none";
-      }
+        markerDiv.classList.remove('vjs-bookmark--focus');
     });
   }
 

@@ -189,7 +189,9 @@
     }
 
     function setMarkderDivStyle(marker, markerDiv) {
-      markerDiv.className = 'vjs-marker ' + (marker.class || "");
+      markerDiv.className = 'vjs-bookmark ' + (marker.class || "");
+
+      markerDiv.innerHTML = '\n        <div>\n            <div class="vjs-bookmark__content">\n                <span class="udi udi-bookmark"></span>\n                <label class="sr-only" for="bookmark_title">Bookmark title</label>\n                <textarea class="marker-content" id="bookmark-' + marker.key + '" maxlength="140" style="height: 35px;" placeholder="enter bookmark title">' + marker.text + '</textarea>\n                <!--<span class="vjs-bookmark__content__placeholder">Click to add a comment.</span>-->\n                <span class="vjs-bookmark__content__counter" id="bookmark-title-counter">140</span>\n                <span class="udi udi-delete" id="remove-bookmark-tooltip"></span>\n                <span class="udi udi-check"></span>\n            </div>\n        </div>\n    ';
 
       Object.keys(setting.markerStyle).forEach(function (key) {
         markerDiv.style[key] = setting.markerStyle[key];
@@ -291,22 +293,22 @@
     // attach hover event handler
     function registerMarkerTipHandler(markerDiv) {
       markerDiv.addEventListener('mouseover', function () {
-        var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
-        if (!!markerTip) {
-          markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
-          // margin-left needs to minus the padding length to align correctly with the marker
-          markerTip.style.left = getPosition(marker) + '%';
-          var markerTipBounding = getElementBounding(markerTip);
-          var markerDivBounding = getElementBounding(markerDiv);
-          markerTip.style.marginLeft = -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
-          markerTip.style.display = 'block';
-        }
+        markerDiv.classList.add('vjs-bookmark--focus');
+        // var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
+        // if (!!markerTip) {
+        //   markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.text(marker);
+        //   // margin-left needs to minus the padding length to align correctly with the marker
+        //   markerTip.style.left = getPosition(marker) + '%';
+        //   var markerTipBounding = getElementBounding(markerTip);
+        //   var markerDivBounding = getElementBounding(markerDiv);
+        //   markerTip.style.marginLeft =
+        //     -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
+        //   markerTip.style.display = 'block';
+        // }
       });
 
       markerDiv.addEventListener('mouseout', function () {
-        if (!!markerTip) {
-          markerTip.style.display = "none";
-        }
+        markerDiv.classList.remove('vjs-bookmark--focus');
       });
     }
 
