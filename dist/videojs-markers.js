@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.1 - 2018-05-20
+  /*! videojs-markers - v1.0.1 - 2018-05-21
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -208,9 +208,9 @@
       });
 
       var bookmarkIcon = _video2.default.createEl('span', {
-        className: 'udi udi-bookmark',
-        id: 'check-icon-' + marker.key
+        className: 'udi udi-bookmark'
       });
+
       var textCounter = _video2.default.createEl('span', {
         className: 'vjs-bookmark__content__counter',
         id: 'text-counter-' + marker.key,
@@ -367,6 +367,9 @@
         textarea.focus();
         var length = textarea.value.length;
         textarea.setSelectionRange(length, length);
+
+        markerDiv.querySelector('.udi-delete').classList.remove('hide');
+        markerDiv.querySelector('.udi-check').classList.remove('show');
       });
 
       markerDiv.addEventListener('mouseout', function () {

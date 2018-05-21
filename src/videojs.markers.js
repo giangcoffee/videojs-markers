@@ -198,9 +198,9 @@ function registerVideoJsMarkersPlugin(options) {
       });
 
       var bookmarkIcon = videojs.createEl('span', {
-          className: 'udi udi-bookmark',
-          id: 'check-icon-' + marker.key
+          className: 'udi udi-bookmark'
       });
+
       var textCounter = videojs.createEl('span', {
           className: 'vjs-bookmark__content__counter',
           id: 'text-counter-' + marker.key,
@@ -357,6 +357,9 @@ function registerVideoJsMarkersPlugin(options) {
         textarea.focus();
         let length = textarea.value.length;
         textarea.setSelectionRange(length, length);
+
+        markerDiv.querySelector('.udi-delete').classList.remove('hide');
+        markerDiv.querySelector('.udi-check').classList.remove('show');
     });
 
     markerDiv.addEventListener('mouseout',() => {
