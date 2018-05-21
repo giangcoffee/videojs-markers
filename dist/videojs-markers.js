@@ -219,7 +219,7 @@
 
       var bookMarkContent = _video2.default.createEl('div', {
         className: 'vjs-bookmark__content',
-        id: 'text-counter-' + marker.key
+        id: 'marker-tip-' + marker.key
       });
 
       bookMarkContent.appendChild(bookmarkIcon);
@@ -369,6 +369,7 @@
         textarea.setSelectionRange(length, length);
 
         markerDiv.querySelector('.udi-delete').classList.remove('hide');
+        markerDiv.querySelector('.vjs-bookmark__content').classList.remove('hide');
         markerDiv.querySelector('.udi-check').classList.remove('show');
       });
 
