@@ -50,6 +50,7 @@ const defaultSetting = {
   onMarkerClick: function(marker) {},
   onMarkerReached: function(marker, index) {},
   onMarkerTextKeyPress: function(marker, index) {},
+  onMarkerTextClick: function(marker, index) {},
   onMarkerTextDeleted: function(marker, index) {},
   markers: [],
 };
@@ -152,7 +153,7 @@ function registerVideoJsMarkersPlugin(options) {
 
   function addMarkers(newMarkers: Array<Marker>): void {
     newMarkers.forEach((marker: Marker) => {
-      player.el().querySelector('.vjs-progress-holder')
+      player.el().querySelector('.vjs-progress-control')
         .appendChild(createMarkerDiv(marker));
 
       // store marker in an internal hash map
@@ -230,6 +231,16 @@ function registerVideoJsMarkersPlugin(options) {
               setting.onMarkerTextKeyPress(event, textarea, textCounter);
           });
       }
+
+      if (typeof setting.onMarkerTextClick === 'function') {
+          textarea.addEventListener('click', function(event) {
+              event.preventDefault();
+              event.stopPropagation();
+
+              setting.onMarkerTextClick(event, textarea);
+          });
+      }
+
 
       if (typeof setting.onMarkerTextDeleted === 'function') {
           deleteIcon.addEventListener('click', function(event) {
@@ -353,10 +364,10 @@ function registerVideoJsMarkersPlugin(options) {
   function registerMarkerTipHandler(markerDiv: Object): void {
     markerDiv.addEventListener('mouseover', () => {
       markerDiv.classList.add('vjs-bookmark--focus');
-        let textarea = markerDiv.querySelector('textarea');
-        textarea.focus();
-        let length = textarea.value.length;
-        textarea.setSelectionRange(length, length);
+        // let textarea = markerDiv.querySelector('textarea');
+        // textarea.focus();
+        // let length = textarea.value.length;
+        // textarea.setSelectionRange(length, length);
 
         markerDiv.querySelector('.udi-delete').classList.remove('hide');
         markerDiv.querySelector('.vjs-bookmark__content').classList.remove('hide');

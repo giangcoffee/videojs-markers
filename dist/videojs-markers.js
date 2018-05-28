@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.1 - 2018-05-21
+  /*! videojs-markers - v1.0.1 - 2018-05-28
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -62,6 +62,7 @@
     onMarkerClick: function onMarkerClick(marker) {},
     onMarkerReached: function onMarkerReached(marker, index) {},
     onMarkerTextKeyPress: function onMarkerTextKeyPress(marker, index) {},
+    onMarkerTextClick: function onMarkerTextClick(marker, index) {},
     onMarkerTextDeleted: function onMarkerTextDeleted(marker, index) {},
     markers: []
   };
@@ -163,7 +164,7 @@
 
     function addMarkers(newMarkers) {
       newMarkers.forEach(function (marker) {
-        player.el().querySelector('.vjs-progress-holder').appendChild(createMarkerDiv(marker));
+        player.el().querySelector('.vjs-progress-control').appendChild(createMarkerDiv(marker));
 
         // store marker in an internal hash map
         markersMap[marker.key] = marker;
@@ -238,6 +239,15 @@
         // if return false, prevent default behavior
         textarea.addEventListener('keypress', function (event) {
           setting.onMarkerTextKeyPress(event, textarea, textCounter);
+        });
+      }
+
+      if (typeof setting.onMarkerTextClick === 'function') {
+        textarea.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+
+          setting.onMarkerTextClick(event, textarea);
         });
       }
 
@@ -363,10 +373,10 @@
     function registerMarkerTipHandler(markerDiv) {
       markerDiv.addEventListener('mouseover', function () {
         markerDiv.classList.add('vjs-bookmark--focus');
-        var textarea = markerDiv.querySelector('textarea');
-        textarea.focus();
-        var length = textarea.value.length;
-        textarea.setSelectionRange(length, length);
+        // let textarea = markerDiv.querySelector('textarea');
+        // textarea.focus();
+        // let length = textarea.value.length;
+        // textarea.setSelectionRange(length, length);
 
         markerDiv.querySelector('.udi-delete').classList.remove('hide');
         markerDiv.querySelector('.vjs-bookmark__content').classList.remove('hide');
