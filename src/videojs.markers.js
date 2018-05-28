@@ -182,9 +182,10 @@ function registerVideoJsMarkersPlugin(options) {
           'maxlength': 140
       });
 
-      var deleteIcon = videojs.createEl('span', {
+      var deleteIcon = videojs.createEl('button', {
           className: 'udi udi-delete',
-          id: 'delete-icon-' + marker.key
+          id: 'delete-icon-' + marker.key,
+          title: 'Delete'
       });
 
       var checkIcon = videojs.createEl('span', {
@@ -363,11 +364,7 @@ function registerVideoJsMarkersPlugin(options) {
   // attach hover event handler
   function registerMarkerTipHandler(markerDiv: Object): void {
     markerDiv.addEventListener('mouseover', () => {
-      markerDiv.classList.add('vjs-bookmark--focus');
-        // let textarea = markerDiv.querySelector('textarea');
-        // textarea.focus();
-        // let length = textarea.value.length;
-        // textarea.setSelectionRange(length, length);
+        markerDiv.classList.add('vjs-bookmark--focus');
 
         markerDiv.querySelector('.udi-delete').classList.remove('hide');
         markerDiv.querySelector('.vjs-bookmark__content').classList.remove('hide');

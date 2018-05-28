@@ -192,9 +192,10 @@
         'maxlength': 140
       });
 
-      var deleteIcon = _video2.default.createEl('span', {
+      var deleteIcon = _video2.default.createEl('button', {
         className: 'udi udi-delete',
-        id: 'delete-icon-' + marker.key
+        id: 'delete-icon-' + marker.key,
+        title: 'Delete'
       });
 
       var checkIcon = _video2.default.createEl('span', {
@@ -373,10 +374,6 @@
     function registerMarkerTipHandler(markerDiv) {
       markerDiv.addEventListener('mouseover', function () {
         markerDiv.classList.add('vjs-bookmark--focus');
-        // let textarea = markerDiv.querySelector('textarea');
-        // textarea.focus();
-        // let length = textarea.value.length;
-        // textarea.setSelectionRange(length, length);
 
         markerDiv.querySelector('.udi-delete').classList.remove('hide');
         markerDiv.querySelector('.vjs-bookmark__content').classList.remove('hide');
