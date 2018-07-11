@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.1 - 2018-05-28
+  /*! videojs-markers - v1.0.1 - 2018-07-11
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -64,7 +64,8 @@
     onMarkerTextKeyPress: function onMarkerTextKeyPress(marker, index) {},
     onMarkerTextClick: function onMarkerTextClick(marker, index) {},
     onMarkerTextDeleted: function onMarkerTextDeleted(marker, index) {},
-    markers: []
+    markers: [],
+    rightThreshold: 80 //percent
   };
 
   /**
@@ -269,7 +270,14 @@
       }
 
       // set position
-      markerDiv.style.left = getPosition(marker) + '%';
+      var leftPercent = getPosition(marker);
+      if (leftPercent <= setting.rightThreshold) {
+        markerDiv.style.left = getPosition(marker) + '%';
+      } else {
+        markerDiv.style.right = 100 - getPosition(marker) + '%';
+        bookMarkContent.style.right = '100%';
+      }
+
       if (marker.duration) {
         markerDiv.style.width = marker.duration / player.duration() * 100 + '%';
         markerDiv.style.marginLeft = '0px';
