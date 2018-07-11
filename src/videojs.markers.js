@@ -53,6 +53,7 @@ const defaultSetting = {
   onMarkerTextClick: function(marker, index) {},
   onMarkerTextDeleted: function(marker, index) {},
   markers: [],
+  rightThreshold: 80 //percent
 };
 
 
@@ -260,7 +261,14 @@ function registerVideoJsMarkersPlugin(options) {
     }
 
     // set position
-    markerDiv.style.left = getPosition(marker) + '%';
+    var leftPercent = getPosition(marker);
+    if (leftPercent <= setting.rightThreshold) {
+        markerDiv.style.left = getPosition(marker) + '%';
+    } else {
+        markerDiv.style.right = (100 - getPosition(marker)) + '%';
+        bookMarkContent.style.right = '100%';
+    }
+
     if (marker.duration) {
       markerDiv.style.width = (marker.duration / player.duration()) * 100 + '%';
       markerDiv.style.marginLeft = '0px';
