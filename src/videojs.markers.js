@@ -53,7 +53,8 @@ const defaultSetting = {
   onMarkerTextClick: function(marker, index) {},
   onMarkerTextDeleted: function(marker, index) {},
   markers: [],
-  rightThreshold: 80 //percent
+  rightThreshold: 80, //percent
+  bookmarkPlaceHolder: 'enter bookmark title'
 };
 
 
@@ -176,7 +177,7 @@ function registerVideoJsMarkersPlugin(options) {
           className: 'marker-content',
           innerText: marker.text,
           'style': "height: 35px;",
-          'placeholder': "enter bookmark title",
+          'placeholder': setting.bookmarkPlaceHolder,
           name: 'bookmark_title'
       }, {
           'marker-id': marker.key,

@@ -65,7 +65,8 @@
     onMarkerTextClick: function onMarkerTextClick(marker, index) {},
     onMarkerTextDeleted: function onMarkerTextDeleted(marker, index) {},
     markers: [],
-    rightThreshold: 80 //percent
+    rightThreshold: 80, //percent
+    bookmarkPlaceHolder: 'enter bookmark title'
   };
 
   /**
@@ -186,7 +187,7 @@
         className: 'marker-content',
         innerText: marker.text,
         'style': "height: 35px;",
-        'placeholder': "enter bookmark title",
+        'placeholder': setting.bookmarkPlaceHolder,
         name: 'bookmark_title'
       }, {
         'marker-id': marker.key,
